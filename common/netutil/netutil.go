@@ -200,7 +200,11 @@ func ExecCmd(c string, args ...string) string {
 	cmd := exec.Command(c, args...)
 	out, err := cmd.Output()
 	if err != nil {
-		log.Println("failed to exec cmd:", err)
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			log.Println("failed to exec cmd:", err, string(exitErr.Stderr))
+		} else {
+			log.Println("failed to exec cmd:", err)
+		}
 	}
 	if len(out) == 0 {
 		return ""
